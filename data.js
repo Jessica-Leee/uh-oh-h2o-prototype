@@ -173,30 +173,42 @@ window.AppData = (function () {
   const forumPosts = [
     {
       id: "p1",
-      sub: "r/AshburnWater",
-      author: "MariaH",
-      ago: "2h",
-      title: "Brown sediment in well water — anyone else near Ashburn Campus A?",
-      body: "Started noticing brown flecks in our tap around 6am. We're about half a mile from the CloudCore facility off Waxpool Rd. Water test kit arrived yesterday — results attached (nitrate 38 mg/L). Filing with the county but want to hear if others are seeing this.",
-      votes: 142, comments: 37, tags: ["sediment", "private-well"]
+      sub: "Ashburn",
+      author: "WRritter",
+      authorHandle: "@WWriter",
+      ago: "2 hrs ago",
+      topicLabel: "HOT TOPIC",
+      title: "Strange metallic taste in well water, anyone else?",
+      body: "Noticing an odd taste in our tap near Data Center Z since this morning. Curious if neighbors in this zone are seeing the same change.",
+      votes: 112,
+      comments: 45,
+      tags: ["Smell", "Taste", "Well Water"]
     },
     {
       id: "p2",
-      sub: "r/LoudounCounty",
-      author: "JamesO",
-      ago: "5h",
-      title: "New data center permit filed near Broad Run — public comment period ends Friday",
-      body: "Loudoun planning commission just posted a new rezoning application for a 2.1M sq ft hyperscale facility. Public hearing is this Friday 7pm. Linking the application below — please show up or submit written comments.",
-      votes: 231, comments: 84, tags: ["organizing", "permit"]
+      sub: "Chesapeake",
+      author: "ChesapeakeAdvocate",
+      authorHandle: "@ChesapeakeAdvocate",
+      ago: "5 hrs ago",
+      topicLabel: "UPCOMING ACTION",
+      pinnedBy: "NAACP Partner Liaison, 5 hrs ago",
+      title: "Aggregate well water data to present to local EPA office. Volunteer sign-up thread.",
+      body: "We are compiling resident kit results this week for a coordinated EPA briefing. Add your data point and availability for testimony support.",
+      votes: 98,
+      comments: 27,
+      tags: ["EPA", "Advocacy", "Data Collection"]
     },
     {
       id: "p3",
-      sub: "r/PrinceWilliamWater",
-      author: "TinaR",
-      ago: "9h",
-      title: "Water bill jumped 40% this quarter — is anyone tracking rate changes?",
-      body: "Just got my Prince William Service Authority bill and it's way higher than last year. I know they've been building out infrastructure to support the Manassas DC Campus. Has anyone seen the rate-case filings?",
-      votes: 88, comments: 22, tags: ["cost", "utility"]
+      sub: "Ashburn",
+      author: "NewTeSteR",
+      authorHandle: "@NewTeSteR",
+      ago: "8 hrs ago",
+      title: "Need help interpreting Turbidity test result from kit. Yellow seems darker than chart, can anyone advise?",
+      body: "First time using the kit and I am unsure if this falls into caution range. Sharing a photo in comments for anyone who can sanity-check my reading.",
+      votes: 74,
+      comments: 18,
+      tags: ["Kit Help", "Interpretation", "Turbidity"]
     },
     {
       id: "p4",
@@ -284,7 +296,7 @@ window.AppData = (function () {
     },
     {
       id: "c2",
-      title: "Letter to EPA Region 3: nitrate contamination in NoVA",
+      title: "Letter to EPA Region 3: nitrate contamination",
       body: "Send a pre-drafted letter with your test results attached to the EPA mid-Atlantic office requesting investigation of cooling discharge impacts.",
       signatures: 3190,
       goal: 5000,
@@ -294,7 +306,7 @@ window.AppData = (function () {
     },
     {
       id: "c3",
-      title: "Town hall RSVP — Loudoun water protections ordinance",
+      title: "Town hall RSVP - Loudoun water protections ordinance",
       body: "Board of Supervisors is voting May 7 on a county ordinance adding minimum-buffer requirements between data centers and drinking-water sources.",
       signatures: 512,
       goal: 1500,

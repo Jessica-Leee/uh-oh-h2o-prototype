@@ -148,6 +148,56 @@
     features: ["Upload water test results", "See community maps + alerts", "Report issues in real time"],
     cta: "Enter the app",
   };
+  const onboardSlides = [
+    {
+      kicker: "Data Center Alley · Northern Virginia",
+      title: "SAVE\nWATER.\nSAVE\nHEALTH.",
+      sub: "Uh-Oh H2O turns community water tests into real-time maps, alerts, and action.",
+      cta: "Learn More",
+    },
+    {
+      kicker: "For every test, a signal.",
+      title: "TEST.\nUPLOAD.\nPROTECT.",
+      sub: "Use a low-cost kit, upload a photo, and help your neighbors see risk early.",
+      cta: "Get Started →",
+    },
+    {
+      kicker: "Where is it happening?",
+      title: "MAP\nDATA CENTERS\n& OUTFALLS",
+      sub: "See nearby facilities, construction, and water reports in one place.",
+      cta: "Open Map →",
+    },
+    {
+      kicker: "Report in real time",
+      title: "REPORT\nAN ISSUE\nIN 10 SECONDS",
+      sub: "Odor, discoloration, fish kill, sudden spikes—log it fast for a paper trail.",
+      cta: "Report Now →",
+    },
+    {
+      kicker: "Organize locally",
+      title: "A WATER\nFORUM\nFOR VA",
+      sub: "A localized Reddit-style forum for water concerns tied to nearby data centers.",
+      cta: "View Forum →",
+    },
+    {
+      kicker: "Partnerships",
+      title: "KITS\nTHROUGH\nTRUSTED ORGS",
+      sub: "Distribution with community partners (e.g., NAACP) to promote environmental justice.",
+      cta: "How it Works →",
+    },
+    {
+      kicker: "From data to policy",
+      title: "TAKE THE\nDATA TO\nWASHINGTON",
+      sub: "Export summaries for hearings, agencies, and public comment periods.",
+      cta: "Advocacy Hub →",
+    },
+    {
+      kicker: "Ready?",
+      title: "HI!\nWELCOME\nTO Uh‑Oh H2O",
+      sub: "Your dashboard starts with local trends, alerts, and quick actions.",
+      cta: "Go to Dashboard",
+    },
+  ];
 
   function renderOnboarding() {
     clearMap();
@@ -616,74 +666,82 @@
     clearMap();
     setHeader({ title: "Forum", showBack: false, showTabs: true });
 
-    const posts =
-      state.forumFilter === "all"
-        ? AppData.forumPosts
-        : AppData.forumPosts.filter((p) => (state.forumFilter === "organizing" ? p.tags.includes("organizing") : true));
+    const posts = AppData.forumPosts;
 
     els.appBody.innerHTML = `
-      <div class="forum-tabs">
-        <button class="forum-tab ${state.forumFilter === "all" ? "active" : ""}" data-filter="all">All</button>
-        <button class="forum-tab ${state.forumFilter === "organizing" ? "active" : ""}" data-filter="organizing">Organizing</button>
-        <button class="forum-tab ${state.forumFilter === "health" ? "active" : ""}" data-filter="health">Health</button>
+      <div class="detail-hero">
+        <h2>Community Water Forum</h2>
+        <p>Ashburn, VA (Data Center Alley)</p>
+        <div class="spacer-s"></div>
+        <input class="form-control" placeholder="Search posts by keyword..." />
+        <div class="spacer-s"></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+          <select class="form-control">
+            <option>Sort by (Newest)</option>
+            <option>Sort by (Most Active)</option>
+            <option>Sort by (Most Upvoted)</option>
+          </select>
+          <select class="form-control">
+            <option>Filter by (All Topics)</option>
+            <option>Filter by (Action Needed)</option>
+            <option>Filter by (Water Quality)</option>
+            <option>Filter by (Policy)</option>
+          </select>
+        </div>
       </div>
       <div>
         ${posts
           .map((p) => {
             const avatarBg = p.sub.includes("Ashburn") ? "#0ea5e9" : p.sub.includes("Fairfax") ? "#8b5cf6" : "#10b981";
+            const tags = (p.tags || []).slice(0, 3).map((t) => `<span class="chip chip-info">${t}</span>`).join(" ");
+            const topicLabel = p.topicLabel ? `<span style="font-weight:800; color:#92400e;">[${p.topicLabel}]</span> ` : "";
+            const pinnedLine = p.pinnedBy ? `<div class="post-body" style="margin-bottom:8px;"><strong>Pinned by:</strong> ${p.pinnedBy}</div>` : "";
             return `
               <button class="post-card" data-post="${p.id}">
                 <div class="post-meta">
                   <span class="post-avatar" style="background:${avatarBg};">${p.author.slice(0, 1).toUpperCase()}</span>
-                  <span class="post-author">${p.author}</span>
-                  <span class="post-sub">${p.sub}</span>
-                  <span>·</span>
+                  <span class="post-author">${p.authorHandle || p.author}</span>
                   <span>${p.ago}</span>
+                  <span>·</span>
+                  <span>${fmtNumber(p.comments)} replies</span>
+                  <span>${fmtNumber(p.votes)} upvotes</span>
                 </div>
-                <div class="post-title">${p.title}</div>
+                <div class="post-title">${topicLabel}${p.title}</div>
                 <div class="post-body">${p.body}</div>
-                <div class="post-actions">
-                  <span class="post-action">${ICONS.plus} ${fmtNumber(p.votes)}</span>
-                  <span class="post-action">${ICONS.chat} ${fmtNumber(p.comments)}</span>
-                  <span class="post-action">${ICONS.arrow} Open</span>
+                ${pinnedLine}
+                <div class="post-actions" style="gap:8px; flex-wrap:wrap;">
+                  ${tags}
                 </div>
               </button>
             `;
           })
           .join("")}
       </div>
-      <button class="fab" id="newPostFab" aria-label="New post">${ICONS.plus}</button>
+      <button class="fab" id="newPostFab" aria-label="Post concern">${ICONS.plus}</button>
     `;
-
-    $(".forum-tabs").addEventListener("click", (e) => {
-      const b = e.target.closest("[data-filter]");
-      if (!b) return;
-      state.forumFilter = b.getAttribute("data-filter");
-      renderForum();
-    });
 
     $$("[data-post]").forEach((b) =>
       b.addEventListener("click", () => push({ type: "thread", postId: b.getAttribute("data-post") })),
     );
     $("#newPostFab").addEventListener("click", () => {
       openModal({
-        title: "Create a post",
-        subtitle: "Prototype demo. In the real app, posts can be anonymous and location-privacy protected.",
+        title: "Post Concern",
+        subtitle: "Share what you're seeing so neighbors and organizers can respond quickly.",
         bodyHTML: `
           <div class="form-group">
             <label class="form-label">Title</label>
-            <input class="form-control" value="Is anyone else seeing foamy runoff near Goose Creek?" />
+            <input class="form-control" value="Observed water issue near Data Center Alley" />
           </div>
           <div class="form-group">
             <label class="form-label">Details</label>
-            <textarea class="form-control">Noticed foam and odor after heavy rain. If you’re nearby, please test and upload.</textarea>
+            <textarea class="form-control">Share time, location, and what you observed (odor, color, runoff, symptoms, etc.).</textarea>
           </div>
-          <button class="btn btn-primary btn-block" id="fakePost">Post</button>
+          <button class="btn btn-primary btn-block" id="fakePost">Post Concern</button>
         `,
       });
       $("#fakePost").addEventListener("click", () => {
         closeModal();
-        toast("Posted to your local forum.");
+        toast("Concern posted to the community forum.");
       });
     });
   }
@@ -758,130 +816,142 @@
     setHeader({ title: "Report", showBack: false, showTabs: true });
 
     const types = [
-      {
-        id: "water",
-        title: "Water change",
-        sub: "Odor, color, sediment, foam",
-        iconBg: "rgba(239,68,68,0.12)",
-        iconColor: "#991b1b",
-        icon: ICONS.warn,
-      },
-      {
-        id: "runoff",
-        title: "Runoff / spill",
-        sub: "Drainage, discharge, creek impact",
-        iconBg: "rgba(245,158,11,0.14)",
-        iconColor: "#92400e",
-        icon: ICONS.pin,
-      },
-      {
-        id: "construction",
-        title: "New construction",
-        sub: "Permits, rezoning, land clearing",
-        iconBg: "rgba(139,92,246,0.12)",
-        iconColor: "#6d28d9",
-        icon: ICONS.megaphone,
-      },
-      {
-        id: "noise",
-        title: "Noise / air",
-        sub: "Fan noise, diesel, dust",
-        iconBg: "rgba(14,165,233,0.12)",
-        iconColor: "#0369a1",
-        icon: ICONS.chat,
-      },
+      { id: "water", icon: "💧", label: "Water Discoloration" },
+      { id: "odor", icon: "👃", label: "Strong Odor / Taste" },
+      { id: "runoff", icon: "⚠️", label: "Wastewater Runoff (from Data Center)" },
+      { id: "construction", icon: "🏗️", label: "Unapproved Construction Near Waterway" },
+      { id: "health", icon: "🚨", label: "Health Concerns (e.g., sudden illness)" },
     ];
 
     els.appBody.innerHTML = `
       <div class="report-hero">
-        <h2>Report an issue</h2>
-        <p>Create a timestamped record the community can corroborate (prototype demo).</p>
+        <h2>Report an Issue.</h2>
+        <p>
+          See a problem? Document it immediately. This data provides crucial context and
+          supports collective action. Your submission will be mapped instantly.
+        </p>
       </div>
 
-      <div class="report-type-grid" id="reportTypes">
-        ${types
-          .map(
-            (t) => `
-              <button class="report-type ${state.reportType === t.id ? "selected" : ""}" data-type="${t.id}">
-                <div class="report-type-icon" style="background:${t.iconBg}; color:${t.iconColor};">${t.icon}</div>
-                <div class="report-type-title">${t.title}</div>
-                <div class="report-type-sub">${t.sub}</div>
-              </button>
-            `,
-          )
-          .join("")}
-      </div>
+      <div class="section" id="reportTypes" style="padding:6px 14px 12px;">
+        <div class="form-group" style="margin-bottom:8px;">
+          <label class="form-label">Select Issue Type</label>
+          <div style="display:grid; gap:4px; font-size:13px; color:var(--ink-2);">
+            ${types
+              .map(
+                (t) => `
+                  <label style="display:flex; align-items:center; gap:6px; line-height:1.2;">
+                    <input type="radio" name="issueType" data-type="${t.id}" ${state.reportType === t.id ? "checked" : ""} />
+                    <span>${t.icon} ${t.label}</span>
+                  </label>
+                `,
+              )
+              .join("")}
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label class="form-label">Nearest area</label>
-        <input class="form-control" value="Ashburn · Broad Run basin" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">What did you observe?</label>
-        <textarea class="form-control">Water is cloudy with brown sediment; noticeable metallic smell.</textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Add photo (optional)</label>
-        <div class="photo-drop">${ICONS.camera}<div class="spacer-s"></div>Tap to add a photo</div>
-      </div>
-      <div class="section">
-        <button class="btn btn-danger btn-block" id="submitReport">${ICONS.warn} Submit report</button>
-        <div class="spacer-s"></div>
-        <button class="btn btn-secondary btn-block" id="attachTest">${ICONS.test} Attach a water test</button>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Location:</label>
+          <input class="form-control" style="padding:10px 12px;" value="Ashburn, VA (Data Center Alley)" />
+        </div>
+
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Add Photos/Video:</label>
+          <div class="photo-drop" id="uploadMedia" style="cursor:pointer; text-align:left; padding:10px 12px;">
+            <div class="row-flex">
+              <span>${ICONS.camera}</span>
+              <span style="font-size:12px;">Upload images of water quality, construction, or runoff.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:4px;">
+          <label class="form-label">Description:</label>
+          <div style="font-size:11px; color:var(--ink-3); line-height:1.25; margin-bottom:3px;">
+            Describe what you see, feel, or smell. Provide as much detail as possible
+            (e.g., frequency, specific site).
+          </div>
+          <textarea class="form-control" style="min-height:66px; padding:10px 12px;">Unusual white, frothy runoff entering the stream near the new data center construction site on X Road. Has been continuous for 2 hours.</textarea>
+        </div>
+
+        <button class="btn btn-danger btn-block" id="submitReport" type="button" style="margin-top:-2px;">Submit Report</button>
       </div>
     `;
 
-    $("#reportTypes").addEventListener("click", (e) => {
-      const b = e.target.closest("[data-type]");
-      if (!b) return;
-      state.reportType = b.getAttribute("data-type");
+    $("#reportTypes").addEventListener("change", (e) => {
+      const input = e.target.closest("[data-type]");
+      if (!input) return;
+      state.reportType = input.getAttribute("data-type");
       renderReport();
     });
 
     $("#submitReport").addEventListener("click", () => toast("Report submitted. Thank you."));
-    $("#attachTest").addEventListener("click", () => push({ type: "water" }));
+    $("#uploadMedia").addEventListener("click", () => toast("Media picker would open here."));
   }
 
   function renderAdvocate() {
     clearMap();
     setHeader({ title: "Advocate", showBack: false, showTabs: true });
 
-    const top = AppData.campaigns[0];
+    const campaigns = AppData.campaigns;
+    const top = campaigns[0];
     const pct = Math.min(100, Math.round((top.signatures / top.goal) * 100));
+    const campaignAction = {
+      c1: "Open View Petition",
+      c2: "Open Pre-draft Letter",
+      c3: "RSVP: Open View Details",
+    };
 
     els.appBody.innerHTML = `
-      <div class="adv-hero">
-        <div class="adv-hero-label">Turn evidence into action</div>
-        <div class="adv-hero-h">Bring your community data to decision-makers.</div>
-        <p class="adv-hero-p">Coordinate hearings, export summaries, and sign petitions tied to NoVA water protections.</p>
-        <div class="adv-progress">
-          <div class="adv-progress-fill" style="width:${pct}%"></div>
+      <div class="section" style="padding:14px 14px 10px;">
+        <div
+          class="card"
+          style="padding:14px; border-radius:22px; color:#fff; background:
+            radial-gradient(circle at 85% 20%, rgba(255,255,255,0.2), transparent 46%),
+            linear-gradient(145deg,#4f46e5,#4338ca 62%,#3730a3);"
+        >
+          <div style="font-size:12px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.9;">
+            ACT FOR WATER JUSTICE
+          </div>
+          <div style="font-size:20px; line-height:1.2; margin-top:4px; font-weight:800;">
+            Connect community-tested data with environmental justice.
+          </div>
+          <div style="font-size:14px; line-height:1.45; margin-top:8px; opacity:0.95;">
+            Aggregate local results for regional, state, and federal advocacy.
+          </div>
+          <div style="margin-top:12px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px;">
+              <span>VA DEQ: 75 / 100 tests</span>
+              <span>EPA Region 3: 42 / 50 tests</span>
+            </div>
+            <div class="adv-progress" style="margin-top:6px;">
+              <div class="adv-progress-fill" style="width:${pct}%"></div>
+            </div>
+            <div style="font-size:11px; opacity:0.94;">Aggregate Data Progress (Regional / State / Federal)</div>
+          </div>
         </div>
-        <div class="adv-progress-label">${fmtNumber(top.signatures)} / ${fmtNumber(top.goal)} signatures · ${top.title}</div>
       </div>
 
-      <div class="section">
-        <div class="section-title">Campaigns</div>
-        <div class="card">
-          ${AppData.campaigns
+      <div class="section" style="padding:2px 14px 16px;">
+        <div class="section-title" style="margin-bottom:10px;">Campaigns</div>
+        <div class="card" style="overflow:hidden;">
+          ${campaigns
             .map((c) => {
-              const bg =
-                c.color === "purple"
-                  ? "rgba(139,92,246,0.12)"
-                  : c.color === "good"
-                    ? "rgba(16,185,129,0.14)"
-                    : "rgba(14,165,233,0.12)";
-              const col = c.color === "purple" ? "#6d28d9" : c.color === "good" ? "#065f46" : "#0369a1";
+              const iconBg = c.color === "purple" ? "#ede9fe" : c.color === "good" ? "#fef3c7" : "#dbeafe";
+              const iconColor = c.color === "purple" ? "#6d28d9" : c.color === "good" ? "#a16207" : "#0369a1";
+              const icon = c.id === "c1" ? ICONS.megaphone : c.id === "c2" ? ICONS.chat : ICONS.pin;
               const pct2 = Math.min(100, Math.round((c.signatures / c.goal) * 100));
+              const cta = campaignAction[c.id] || "Open";
               return `
-                <button class="list-row" data-campaign="${c.id}">
-                  <div class="list-row-icon" style="background:${bg}; color:${col};">${ICONS.megaphone}</div>
-                  <div class="list-row-body">
-                    <div class="list-row-title">${c.title}</div>
-                    <div class="list-row-sub">${c.body}</div>
-                    <div class="list-row-meta">${pct2}% to goal</div>
+                <button class="list-row" data-campaign="${c.id}" style="align-items:flex-start; padding:10px 10px;">
+                  <div class="list-row-icon" style="background:${iconBg}; color:${iconColor}; margin-top:1px; width:34px; height:34px;">${icon}</div>
+                  <div class="list-row-body" style="padding-right:6px;">
+                    <div class="list-row-title" style="font-size:14px; line-height:1.2; margin-bottom:3px;">${c.title}</div>
+                    <div class="list-row-sub" style="font-size:10px; line-height:1.32; color:var(--ink-2);">${c.body}</div>
+                    <div class="list-row-meta" style="font-size:12px; margin-top:3px; color:var(--ink);">${pct2}% to goal</div>
                   </div>
-                  <div class="list-row-meta">Open</div>
+                  <div class="list-row-meta" style="align-self:center; text-align:right; width:72px; color:#075985; font-size:12px; line-height:1.15; font-weight:500;">
+                    ${cta}
+                  </div>
                 </button>
               `;
             })
@@ -900,7 +970,7 @@
           bodyHTML: `
             <div class="ink-2" style="font-size:13px; line-height:1.55;">${c.body}</div>
             <div class="spacer-m"></div>
-            <button class="btn btn-primary btn-block" id="signBtn">Sign / RSVP</button>
+            <button class="btn btn-primary btn-block" id="signBtn">${campaignAction[c.id] || "Take action"}</button>
             <div class="spacer-s"></div>
             <button class="btn btn-secondary btn-block" id="exportBtn">Export local summary (PDF)</button>
           `,

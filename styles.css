@@ -742,16 +742,14 @@ input, textarea, select { font-family: inherit; }
    Report screen
    ============================================================ */
 .report-hero {
-  background: linear-gradient(135deg, #dc2626, #f97316);
-  color: #fff;
-  padding: 20px;
-  margin: 16px 16px 0;
-  border-radius: 18px;
-  position: relative;
-  overflow: hidden;
+  background: transparent;
+  color: var(--ink);
+  padding: 10px 14px 4px;
+  margin: 0;
+  text-align: center;
 }
-.report-hero h2 { margin: 0 0 4px; font-size: 22px; letter-spacing: -0.02em; }
-.report-hero p { margin: 0; font-size: 13px; opacity: 0.95; line-height: 1.5; }
+.report-hero h2 { margin: 0 0 3px; font-size: 24px; letter-spacing: -0.02em; }
+.report-hero p { margin: 0 auto; font-size: 12px; color: var(--ink-2); line-height: 1.4; max-width: 320px; }
 
 .report-type-grid {
   display: grid; grid-template-columns: 1fr 1fr;
