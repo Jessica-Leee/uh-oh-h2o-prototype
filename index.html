@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="iframe-overrides.css" />
 </head>
 <body>
   <div class="stage">
@@ -52,6 +53,9 @@
             <span>Advocate</span>
           </button>
         </nav>
+
+        <!-- Modal root (kept inside phone-screen so it doesn't escape the frame) -->
+        <div class="modal-root" id="modalRoot" hidden></div>
       </div>
       <div class="phone-side phone-side-power"></div>
       <div class="phone-side phone-side-volume-up"></div>
@@ -59,9 +63,11 @@
     </div>
   </div>
 
-  <!-- Modal root -->
-  <div class="modal-root" id="modalRoot" hidden></div>
-
+  <script>
+    if (window.self !== window.top) {
+      document.documentElement.classList.add('is-iframe');
+    }
+  </script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>

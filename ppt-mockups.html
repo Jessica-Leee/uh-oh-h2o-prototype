@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uh-Oh H2O — PPT Mockups</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0; padding: 60px 40px;
+      font-family: 'Inter', sans-serif;
+      background: #F8FAFC;
+      display: flex; gap: 60px;
+      overflow-x: auto;
+      min-height: 100vh;
+      align-items: center;
+    }
+    .mockup {
+      display: flex; flex-direction: column; align-items: center; gap: 24px;
+      flex-shrink: 0;
+    }
+    .mockup-label {
+      font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: #0F172A;
+    }
+    /* Mimic iPhone frame around iframe */
+    .iphone-frame {
+      width: 390px; height: 844px;
+      border-radius: 54px;
+      background: #0B1220;
+      padding: 14px;
+      box-shadow: 0 40px 80px rgba(15,23,42,0.15), 0 0 0 2px rgba(255,255,255,0.6) inset;
+      position: relative;
+    }
+    .iphone-notch {
+      position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+      width: 118px; height: 32px; background: #0B1220; border-radius: 20px; z-index: 20;
+    }
+    .iphone-screen {
+      width: 100%; height: 100%;
+      border-radius: 42px;
+      overflow: hidden;
+      background: #fff;
+    }
+    iframe {
+      width: 100%; height: 100%;
+      border: none; outline: none;
+      /* Remove stage wrapper from inside iframe via url params ideally, but our CSS allows normal viewing */
+    }
+  </style>
+  <script>
+    function fitToScreen() {
+      // Calculate scale to fit vertical viewport
+      const targetHeight = 872 + 60 + 120; // frame + label + body padding
+      const ratio = Math.min(1, window.innerHeight / targetHeight);
+      document.body.style.zoom = ratio;
+    }
+    window.addEventListener('resize', fitToScreen);
+    window.addEventListener('DOMContentLoaded', fitToScreen);
+  </script>
+</head>
+<body>
+
+  <!-- Screen 1: Intro -->
+  <div class="mockup">
+    <div class="iphone-frame">
+      <div class="iphone-notch"></div>
+      <div class="iphone-screen"><iframe src="index.html?screen=intro"></iframe></div>
+    </div>
+    <div class="mockup-label">1. Splash / Intro</div>
+  </div>
+
+  <!-- Screen 2: Home / Alerts -->
+  <div class="mockup">
+    <div class="iphone-frame">
+      <div class="iphone-notch"></div>
+      <div class="iphone-screen"><iframe src="index.html?screen=home"></iframe></div>
+    </div>
+    <div class="mockup-label">2. Home & Alerts</div>
+  </div>
+
+  <!-- Screen 3: Map -->
+  <div class="mockup">
+    <div class="iphone-frame">
+      <div class="iphone-notch"></div>
+      <div class="iphone-screen"><iframe src="index.html?screen=map"></iframe></div>
+    </div>
+    <div class="mockup-label">3. Interactive Map</div>
+  </div>
+
+  <!-- Screen 4: Report -->
+  <div class="mockup">
+    <div class="iphone-frame">
+      <div class="iphone-notch"></div>
+      <div class="iphone-screen"><iframe src="index.html?screen=report"></iframe></div>
+    </div>
+    <div class="mockup-label">4. Report Issue</div>
+  </div>
+
+</body>
+</html>

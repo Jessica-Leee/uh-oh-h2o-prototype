@@ -41,11 +41,25 @@
     plus: `<svg viewBox="0 0 24 24"><path d="M12 5v14 M5 12h14" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>`,
     arrow: `<svg viewBox="0 0 24 24"><path d="M5 12h12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
     camera: `<svg viewBox="0 0 24 24"><path d="M4 7h4l2-2h4l2 2h4v12H4V7z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/><path d="M12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>`,
+    signal: `<svg viewBox="0 0 24 24"><path d="M4 18h2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M8 18h2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M12 18h2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M6 18V14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M10 18V11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M14 18V8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M18 18V6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M16 18h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`,
   };
 
   function fmtNumber(n) {
     if (typeof n !== "number") return String(n ?? "");
     return n.toLocaleString("en-US");
+  }
+
+  function haversineMiles(a, b) {
+    const toRad = (deg) => (deg * Math.PI) / 180;
+    const R = 3958.8; // miles
+    const dLat = toRad(b.lat - a.lat);
+    const dLon = toRad(b.lng - a.lng);
+    const lat1 = toRad(a.lat);
+    const lat2 = toRad(b.lat);
+    const h =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
   }
 
   function chipForStatus(status) {
@@ -126,87 +140,40 @@
   /* ============================================================
      Onboarding (PDF-like “slide” flow)
      ============================================================ */
-  const onboardSlides = [
-    {
-      kicker: "Data Center Alley · Northern Virginia",
-      title: "SAVE\nWATER.\nSAVE\nHEALTH.",
-      sub: "Uh-Oh H2O turns community water tests into real-time maps, alerts, and action.",
-      cta: "Learn More",
-    },
-    {
-      kicker: "For every test, a signal.",
-      title: "TEST.\nUPLOAD.\nPROTECT.",
-      sub: "Use a low-cost kit, upload a photo, and help your neighbors see risk early.",
-      cta: "Get Started →",
-    },
-    {
-      kicker: "Where is it happening?",
-      title: "MAP\nDATA CENTERS\n& OUTFALLS",
-      sub: "See nearby facilities, construction, and water reports in one place.",
-      cta: "Open Map →",
-    },
-    {
-      kicker: "Report in real time",
-      title: "REPORT\nAN ISSUE\nIN 10 SECONDS",
-      sub: "Odor, discoloration, fish kill, sudden spikes—log it fast for a paper trail.",
-      cta: "Report Now →",
-    },
-    {
-      kicker: "Organize locally",
-      title: "A WATER\nFORUM\nFOR NoVA",
-      sub: "A localized Reddit-style forum for water concerns tied to nearby data centers.",
-      cta: "View Forum →",
-    },
-    {
-      kicker: "Partnerships",
-      title: "KITS\nTHROUGH\nTRUSTED ORGS",
-      sub: "Distribution with community partners (e.g., NAACP) to promote environmental justice.",
-      cta: "How it Works →",
-    },
-    {
-      kicker: "From data to policy",
-      title: "TAKE THE\nDATA TO\nWASHINGTON",
-      sub: "Export summaries for hearings, agencies, and public comment periods.",
-      cta: "Advocacy Hub →",
-    },
-    {
-      kicker: "Ready?",
-      title: "HI!\nWELCOME\nTO Uh‑Oh H2O",
-      sub: "Your dashboard starts with local trends, alerts, and quick actions.",
-      cta: "Go to Dashboard",
-    },
-  ];
+  const onboardIntro = {
+    brand: "Uh-Oh H2O",
+    headline: "Your water, your health, your community.",
+    body:
+      "Northern Virginia faces a water crisis driven by AI data centers. Together, with partners like the NAACP and local communities, we can reclaim transparency and demand clean water.",
+    features: ["Upload water test results", "See community maps + alerts", "Report issues in real time"],
+    cta: "Enter the app",
+  };
 
-  function renderOnboarding(idx = 0) {
+  function renderOnboarding() {
     clearMap();
     setHeader({ showTabs: false });
-    const slide = onboardSlides[idx];
-    const dots = onboardSlides
-      .map((_, i) => `<span class="onboard-dot ${i === idx ? "active" : ""}"></span>`)
-      .join("");
 
     els.appBody.innerHTML = `
       <section class="onboard">
         <div class="onboard-top">
-          <div class="onboard-kicker">${slide.kicker}</div>
-          <button class="onboard-skip" id="skipOnboard">Skip</button>
+          <div class="onboard-kicker onboard-brand">${onboardIntro.brand}</div>
         </div>
-        <div class="onboard-title">${slide.title.replaceAll("\n", "<br/>")}</div>
-        <p class="onboard-sub">${slide.sub}</p>
+        <div class="onboard-hero" aria-hidden="true">
+          <img class="onboard-hero-img" src="assets/logo.svg" alt="Uh-Oh H2O Logo" />
+        </div>
+        <div class="onboard-title onboard-title-sentence">${onboardIntro.headline}</div>
+        <p class="onboard-sub">${onboardIntro.body}</p>
+        <div class="onboard-features" aria-label="Key features">
+          ${onboardIntro.features.map((t) => `<div class="onboard-pill">${t}</div>`).join("")}
+        </div>
         <div class="onboard-cta">
-          <button class="btn btn-primary btn-block" id="onboardCta">${slide.cta}</button>
-          <div class="onboard-dots" aria-hidden="true">${dots}</div>
+          <button class="btn btn-primary btn-block" id="onboardCta">${onboardIntro.cta}</button>
         </div>
       </section>
     `;
 
-    $("#skipOnboard").addEventListener("click", () => finishOnboarding());
     $("#onboardCta").addEventListener("click", () => {
-      if (idx < onboardSlides.length - 1) {
-        renderOnboarding(idx + 1);
-      } else {
-        finishOnboarding();
-      }
+      finishOnboarding();
     });
   }
 
@@ -226,7 +193,6 @@
     const totalReports = AppData.waterReadings.length;
     const operating = AppData.dataCenters.filter((d) => d.status === "operating").length;
     const newBuild = AppData.dataCenters.filter((d) => d.status !== "operating").length;
-
     els.appBody.innerHTML = `
       <div class="home-hero">
         <div class="home-hero-label">Northern Virginia · Community Water Watch</div>
@@ -248,26 +214,9 @@
         </div>
       </div>
 
-      <div class="quick-grid">
-        <button class="quick-tile" data-nav="water">
-          <div class="quick-tile-icon" style="background: rgba(14,165,233,0.12); color: #0369a1;">${ICONS.test}</div>
-          <div class="quick-tile-title">Upload a test</div>
-          <div class="quick-tile-sub">Photo + values. Takes 1 minute.</div>
-        </button>
-        <button class="quick-tile" data-tab="map">
-          <div class="quick-tile-icon" style="background: rgba(16,185,129,0.14); color: #065f46;">${ICONS.pin}</div>
-          <div class="quick-tile-title">Open map</div>
-          <div class="quick-tile-sub">Data centers + water reports.</div>
-        </button>
-        <button class="quick-tile" data-tab="report">
-          <div class="quick-tile-icon" style="background: rgba(239,68,68,0.12); color: #991b1b;">${ICONS.warn}</div>
-          <div class="quick-tile-title">Report an issue</div>
-          <div class="quick-tile-sub">Discoloration, odor, runoff.</div>
-        </button>
-        <button class="quick-tile" data-tab="forum">
-          <div class="quick-tile-icon" style="background: rgba(139,92,246,0.12); color: #6d28d9;">${ICONS.chat}</div>
-          <div class="quick-tile-title">Community forum</div>
-          <div class="quick-tile-sub">Ask + coordinate locally.</div>
+      <div class="section" style="padding-top: 16px;">
+        <button class="btn btn-primary btn-block" id="homeUploadTest" style="padding: 16px; font-size: 15px; border-radius: 16px; box-shadow: 0 8px 20px rgba(14,165,233,0.35);">
+          ${ICONS.camera} Upload a water test
         </button>
       </div>
 
@@ -300,14 +249,11 @@
       </div>
     `;
 
-    $$("[data-tab]").forEach((b) =>
-      b.addEventListener("click", () => goToTab(b.getAttribute("data-tab"), { resetStack: true })),
-    );
-    $("[data-nav='water']").addEventListener("click", () => push({ type: "water" }));
     $("#viewAlerts").addEventListener("click", (e) => {
       e.preventDefault();
       openAlertsModal();
     });
+    $("#homeUploadTest").addEventListener("click", () => push({ type: "water" }));
   }
 
   function renderWaterQuality() {
@@ -421,20 +367,81 @@
 
   function renderMap() {
     setHeader({ title: "Map", showBack: false, showTabs: true });
+
+    const latest = [...AppData.waterReadings].sort((a, b) => (a.date < b.date ? 1 : -1))[0];
+    const nearest = AppData.dataCenters
+      .map((dc) => ({ dc, miles: haversineMiles({ lat: latest.lat, lng: latest.lng }, { lat: dc.lat, lng: dc.lng }) }))
+      .sort((x, y) => x.miles - y.miles)[0];
+
+    const myStatusLabel = latest.status === "good" ? "Safe" : latest.status === "warn" ? "Caution" : "Avoid";
+    const myIcon =
+      latest.status === "good"
+        ? `<span class="map-mini-icon map-mini-good">✓</span>`
+        : latest.status === "warn"
+          ? `<span class="map-mini-icon map-mini-warn">!</span>`
+          : `<span class="map-mini-icon map-mini-bad">!</span>`;
+
+    const coolingLabel = nearest.dc.dailyGallons >= 4_000_000 ? "High" : nearest.dc.dailyGallons >= 2_500_000 ? "Medium" : "Low";
+    const coolingClass = coolingLabel === "High" ? "map-stat-high" : coolingLabel === "Medium" ? "map-stat-med" : "map-stat-low";
+
+    const alert = AppData.alerts.find((a) => a.severity === "bad") || AppData.alerts[0];
+    const alertPrefix = alert?.type ? alert.type.toUpperCase() : "ALERT";
+
     els.appBody.innerHTML = `
       <div class="map-wrap">
-        <div class="map-legend">
-          <div class="map-legend-row"><span class="map-dot" style="background:#0ea5e9;"></span> Data center</div>
-          <div class="map-legend-row"><span class="map-dot" style="background:#10b981;"></span> Water report (safe)</div>
-          <div class="map-legend-row"><span class="map-dot" style="background:#f59e0b;"></span> Water report (caution)</div>
-          <div class="map-legend-row"><span class="map-dot" style="background:#ef4444;"></span> Water report (avoid)</div>
+        <div class="map-area">
+          <div class="map-legend">
+            <div class="map-legend-row"><span class="map-dot" style="background:#0ea5e9;"></span> Data center</div>
+            <div class="map-legend-row"><span class="map-dot" style="background:#10b981;"></span> Water report (safe)</div>
+            <div class="map-legend-row"><span class="map-dot" style="background:#f59e0b;"></span> Water report (caution)</div>
+            <div class="map-legend-row"><span class="map-dot" style="background:#ef4444;"></span> Water report (avoid)</div>
+          </div>
+          <div id="leaflet-map"></div>
+          <div class="map-filter" id="mapFilter">
+            <button class="filter-pill ${state.mapFilter === "all" ? "active" : ""}" data-filter="all">All</button>
+            <button class="filter-pill ${state.mapFilter === "centers" ? "active" : ""}" data-filter="centers">Data centers</button>
+            <button class="filter-pill ${state.mapFilter === "reports" ? "active" : ""}" data-filter="reports">Water reports</button>
+            <button class="filter-pill ${state.mapFilter === "proposed" ? "active" : ""}" data-filter="proposed">New builds</button>
+          </div>
         </div>
-        <div id="leaflet-map"></div>
-        <div class="map-filter" id="mapFilter">
-          <button class="filter-pill ${state.mapFilter === "all" ? "active" : ""}" data-filter="all">All</button>
-          <button class="filter-pill ${state.mapFilter === "centers" ? "active" : ""}" data-filter="centers">Data centers</button>
-          <button class="filter-pill ${state.mapFilter === "reports" ? "active" : ""}" data-filter="reports">Water reports</button>
-          <button class="filter-pill ${state.mapFilter === "proposed" ? "active" : ""}" data-filter="proposed">New builds</button>
+
+        <div class="map-panel">
+          <div class="map-alert" role="note">
+            <strong>${alertPrefix}:</strong> ${alert?.body ?? "New water activity reported nearby. Review community notes."}
+          </div>
+
+          <div class="map-cards">
+            <button class="map-card map-card-btn" id="homeAlertCard" type="button">
+              <div class="map-card-title">Local Alert</div>
+              <div class="map-card-body">
+                <div class="map-card-status">
+                  ${myIcon}
+                  <div class="map-card-status-text">
+                    <div class="map-card-status-label">Alert: ${myStatusLabel}</div>
+                    <div class="map-card-status-sub">Last updated ${latest.date}</div>
+                  </div>
+                </div>
+                <div class="map-home-note">
+                  Based on the most recent community report near <strong>${latest.location}</strong>.
+                </div>
+              </div>
+            </button>
+
+            <button class="map-card map-card-btn" id="nearDcCard" type="button">
+              <div class="map-card-title">Nearby Data Center</div>
+              <div class="map-card-body">
+                <div class="map-dc-row">
+                  <div class="map-dc-name">${nearest.dc.name}</div>
+                  <div class="map-dc-dist">${nearest.miles.toFixed(1)} miles</div>
+                </div>
+                <div class="map-dc-sub">${nearest.dc.operator} · ${nearest.dc.county} County</div>
+                <div class="map-dc-signal">
+                  <div class="map-dc-signal-icon">${ICONS.signal}</div>
+                  <div class="map-dc-signal-text">Tap for details</div>
+                </div>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -447,6 +454,80 @@
       $$(".filter-pill", $("#mapFilter")).forEach((b) => b.classList.toggle("active", b === btn));
       applyMapFilter();
     });
+
+    $("#nearDcCard").addEventListener("click", () => {
+      openModal({
+        title: nearest.dc.name,
+        subtitle: `${nearest.dc.operator} · ${nearest.dc.county} County · ${nearest.miles.toFixed(1)} miles away`,
+        bodyHTML: `
+          <div class="card" style="overflow:hidden;">
+            <div class="wq-contaminant-row" style="grid-template-columns:1fr auto;">
+              <div>
+                <div class="wq-name">Cooling activity</div>
+                <div class="wq-limit">Estimated from reported water use (prototype).</div>
+              </div>
+              <div><strong class="${coolingClass}" style="font-size:13px;">${coolingLabel}</strong></div>
+            </div>
+            <div class="wq-contaminant-row" style="grid-template-columns:1fr auto;">
+              <div>
+                <div class="wq-name">Status</div>
+                <div class="wq-limit">Permitting / construction stage.</div>
+              </div>
+              <div><strong style="font-size:13px;">${nearest.dc.status}</strong></div>
+            </div>
+            <div class="wq-contaminant-row" style="grid-template-columns:1fr auto;">
+              <div>
+                <div class="wq-name">Water use</div>
+                <div class="wq-limit">Cooling withdrawals (illustrative).</div>
+              </div>
+              <div><strong style="font-size:13px;">${nearest.dc.dailyGallons ? `${fmtNumber(nearest.dc.dailyGallons)} gal/day` : "—"}</strong></div>
+            </div>
+          </div>
+        `,
+      });
+    });
+
+    $("#homeAlertCard").addEventListener("click", () => {
+      const rows = [
+        { label: "Nitrate", value: `${latest.nitrate} mg/L`, limit: `${AppData.thresholds.nitrate.limit} mg/L` },
+        { label: "Turbidity", value: `${latest.turbidity} NTU`, limit: `${AppData.thresholds.turbidity.limit} NTU` },
+        { label: "Chloride", value: `${latest.chloride} mg/L`, limit: `${AppData.thresholds.chloride.limit} mg/L` },
+        { label: "pH", value: `${latest.ph}`, limit: `${AppData.thresholds.ph.limit}` },
+      ];
+
+      openModal({
+        title: `Local report: ${myStatusLabel}`,
+        subtitle: `${latest.location} · ${latest.county} County · ${latest.date}`,
+        bodyHTML: `
+          <div class="ink-2" style="font-size:13px; line-height:1.55;">
+            This is the most recent community-submitted test in your area (prototype demo). Use it as an early signal and compare against simplified EPA-style limits.
+          </div>
+          <div class="spacer-m"></div>
+          <div class="card" style="overflow:hidden;">
+            ${rows
+              .map(
+                (r) => `
+                  <div class="wq-contaminant-row" style="grid-template-columns:1fr auto;">
+                    <div>
+                      <div class="wq-name">${r.label}</div>
+                      <div class="wq-limit">Limit: ${r.limit}</div>
+                    </div>
+                    <div><strong style="font-size:13px;">${r.value}</strong></div>
+                  </div>
+                `,
+              )
+              .join("")}
+            <div class="wq-contaminant-row" style="grid-template-columns:1fr auto;">
+              <div>
+                <div class="wq-name">PFAs</div>
+                <div class="wq-limit">Not included in the latest report.</div>
+              </div>
+              <div><strong style="font-size:13px;">Not tested</strong></div>
+            </div>
+          </div>
+        `,
+      });
+    });
   }
 
   function initMap() {
@@ -457,6 +538,9 @@
       attribution: "&copy; OpenStreetMap contributors",
       maxZoom: 18,
     }).addTo(state.map);
+    setTimeout(() => {
+      if (state.map) state.map.invalidateSize();
+    }, 0);
 
     // Data centers
     state.mapLayers.centers = AppData.dataCenters.map((dc) => {
@@ -908,6 +992,11 @@
   });
 
   // Initial boot
-  if (!state.hasOnboarded) renderOnboarding(0);
+  const params = new URLSearchParams(window.location.search);
+  const screen = params.get('screen');
+  if (screen === 'home') { state.hasOnboarded = true; goToTab('home', {resetStack: true}); }
+  else if (screen === 'map') { state.hasOnboarded = true; goToTab('map', {resetStack: true}); }
+  else if (screen === 'report') { state.hasOnboarded = true; goToTab('report', {resetStack: true}); }
+  else if (!state.hasOnboarded) renderOnboarding();
 })();
 

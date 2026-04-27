@@ -1,0 +1,27 @@
+
+/* ============================================================
+   iframe / PPT Mockup mode
+   ============================================================ */
+html.is-iframe body {
+  background: transparent;
+  min-height: 100vh;
+}
+html.is-iframe .stage {
+  padding: 0;
+  max-width: none;
+}
+html.is-iframe .phone {
+  width: 100vw;
+  height: 100vh;
+  max-height: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+}
+html.is-iframe .phone-screen {
+  border-radius: 0;
+}
+html.is-iframe .phone-notch,
+html.is-iframe .phone-side {
+  display: none;
+}
