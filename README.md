@@ -1,4 +1,4 @@
-# Uh-Oh H2O
+# Uh-Oh H2O: Community Water Prototype
 
 An interactive mobile-web prototype for exploring community water information around Northern Virginia data centers. It connects a map, sample water readings, neighborhood discussions, and reporting flows in a phone-sized interface.
 
