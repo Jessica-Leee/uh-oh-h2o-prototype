@@ -33,5 +33,19 @@ Water readings are mock data, and real-site locations are approximate. The displ
 - `app.js`: navigation, screen rendering, and interactions.
 - `data.js`: prototype content.
 - `styles.css`: layout and visual components.
+- `iframe-overrides.css`: layout adjustments when embedded in another page.
+- `ppt-mockups.html`: a separate presentation/mockup surface.
+
+For the screen flow and source-code map, see the [project guide](docs/PROJECT_GUIDE.md).
+
+JavaScript syntax can be checked locally with Node.js:
+
+```sh
+node --check data.js
+node --check app.js
+```
+
+These commands check syntax. Map loading and interaction behavior still need a
+browser check with an internet connection.
 
 Maps use [Leaflet](https://leafletjs.com/) and [OpenStreetMap](https://www.openstreetmap.org/copyright) tiles. The application retains the map attribution in its tile-layer configuration.
